@@ -16,7 +16,7 @@ public class TaskViewModel extends AndroidViewModel {
     public TaskViewModel(@NonNull Application application) {
         super(application);
         taskRespositry=new TaskRespositry(application);
-        task=taskRespositry.getallnots();
+        task=taskRespositry.getalltask();
     }
     public void inserttask(TaskEntity entity){
         taskRespositry.inserttask(entity);
@@ -31,7 +31,7 @@ public class TaskViewModel extends AndroidViewModel {
         taskRespositry.deletealltask();
     }
 
-    LiveData<List<TaskEntity>> getalltask(){
+    public LiveData<List<TaskEntity>> getalltask(){
         return task;
     }
 }

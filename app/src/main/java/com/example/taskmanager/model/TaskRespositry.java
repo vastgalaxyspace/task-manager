@@ -36,7 +36,7 @@ public class TaskRespositry {
         });
     }
 
-    public LiveData<List<TaskEntity>> getallnots(){
+    public LiveData<List<TaskEntity>> getalltask(){
         return liveData;
     }
 

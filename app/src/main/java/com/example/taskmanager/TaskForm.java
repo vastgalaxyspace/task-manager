@@ -2,6 +2,7 @@ package com.example.taskmanager;
 
 import android.app.DatePickerDialog;
 import android.app.TimePickerDialog;
+import android.content.Intent;
 import android.os.Bundle;
 import android.util.Log;
 import android.view.View;
@@ -134,6 +135,10 @@ public class TaskForm extends AppCompatActivity {
             try {
                 roomDatabase.taskDao().inserttask(task);
                 runOnUiThread(() -> Toast.makeText(TaskForm.this, "Task saved successfully", Toast.LENGTH_SHORT).show());
+                Intent intent=new Intent(TaskForm.this,MainActivity.class);
+                startActivity(intent);
+                finish();
+
             } catch (Exception e) {
                 e.printStackTrace();
                 runOnUiThread(() -> Toast.makeText(TaskForm.this, "Failed to save task", Toast.LENGTH_SHORT).show());
