@@ -1,2 +1,3 @@
 Task Manager
-![image](https://github.com/user-attachments/assets/bb1433d5-45df-4798-a9cf-d0ad4d7d723b)
+![image](https://github.com/user-attachments/assets/d0881778-4c6e-407d-ad29-909c09fd2487)
+
