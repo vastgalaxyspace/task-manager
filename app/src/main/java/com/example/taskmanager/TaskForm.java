@@ -12,6 +12,7 @@ import android.widget.EditText;
 import android.widget.TextView;
 import android.widget.TimePicker;
 import android.widget.Toast;
+import androidx.appcompat.widget.Toolbar;
 
 import androidx.appcompat.app.AppCompatActivity;
 
@@ -31,6 +32,7 @@ public class TaskForm extends AppCompatActivity {
     private EditText title, description, date;
     private TaskRoomDatabase roomDatabase;
     private TaskEntity task;
+    private Toolbar toolbar;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -44,6 +46,18 @@ public class TaskForm extends AppCompatActivity {
         description = findViewById(R.id.task_description);
         date = findViewById(R.id.task_date);
         save = findViewById(R.id.save_task);
+
+        toolbar=findViewById(R.id.my_toolbar);
+        setSupportActionBar(toolbar);
+        toolbar.setNavigationOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                Intent intent1 = new Intent(TaskForm.this, MainActivity.class);
+                startActivity(intent1);
+                finish();
+            }
+        });
+
 
         roomDatabase = TaskRoomDatabase.getDatabase(this);
 
@@ -111,7 +125,10 @@ public class TaskForm extends AppCompatActivity {
         String taskdate = date.getText().toString();
         String timetask = showtime.getText().toString();
         String dateTimeString = taskdate + " " + timetask;
-
+        if (tasktitle.isEmpty() || taskdescription.isEmpty() || taskdate.isEmpty() || timetask.isEmpty()) {
+            Toast.makeText(TaskForm.this, "Please fill in all fields", Toast.LENGTH_SHORT).show();
+            return;
+        }
         Log.d("TaskForm", "Date: " + taskdate);
         Log.d("TaskForm", "Time: " + timetask);
         Log.d("TaskForm", "DateTime: " + dateTimeString);
@@ -123,6 +140,8 @@ public class TaskForm extends AppCompatActivity {
         } catch (ParseException e) {
             e.printStackTrace();
             Log.e("TaskForm", "Failed to parse date: " + dateTimeString, e);
+            Toast.makeText(TaskForm.this, "Invalid date or time format", Toast.LENGTH_SHORT).show();
+            return;
         }
 
         TaskEntity task = new TaskEntity();

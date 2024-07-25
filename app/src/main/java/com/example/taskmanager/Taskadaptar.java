@@ -1,6 +1,9 @@
 package com.example.taskmanager;
 
+import android.app.AlarmManager;
+import android.app.PendingIntent;
 import android.content.Context;
+import android.content.Intent;
 import android.os.Handler;
 import android.os.Looper;
 import android.view.LayoutInflater;
@@ -10,6 +13,7 @@ import android.widget.ImageButton;
 import android.widget.TextView;
 
 import androidx.annotation.NonNull;
+import androidx.recyclerview.widget.ItemTouchHelper;
 import androidx.recyclerview.widget.RecyclerView;
 
 import com.example.taskmanager.model.TaskEntity;
@@ -17,6 +21,7 @@ import com.example.taskmanager.model.TaskRoomDatabase;
 import com.example.taskmanager.model.TaskViewModel;
 
 import java.text.SimpleDateFormat;
+import java.util.Calendar;
 import java.util.List;
 import java.util.Locale;
 
@@ -44,6 +49,7 @@ public class Taskadaptar extends RecyclerView.Adapter<Taskadaptar.TaskViewholder
     @Override
     public void onBindViewHolder(@NonNull Taskadaptar.TaskViewholder holder, int position) {
         TaskEntity task=tasklist.get(position);
+
         holder.tvTaskTitle.setText(task.getTitle());
         holder.tvTaskDescription.setText(task.getDescription());
 
@@ -61,6 +67,29 @@ public class Taskadaptar extends RecyclerView.Adapter<Taskadaptar.TaskViewholder
         });
 
 
+
+    }
+    private void setAlaram(TaskEntity task){
+        Calendar calendar=Calendar.getInstance();
+        calendar.setTime(task.getDueDate());
+
+        String[]  timeparts=task.getReminderTime().split(":");
+        int hour=Integer.parseInt(timeparts[0]);
+        int minute=Integer.parseInt(timeparts[1]);
+
+        calendar.set(Calendar.HOUR_OF_DAY,hour);
+        calendar.set(Calendar.MINUTE,minute);
+        calendar.set(Calendar.SECOND,0);
+
+        AlarmManager alarmManager = (AlarmManager) context.getSystemService(Context.ALARM_SERVICE);
+        Intent intent = new Intent(context, AlramReceiver.class);
+        intent.putExtra("taskId", task.getTaskid());
+
+        PendingIntent pendingIntent = PendingIntent.getBroadcast(context, task.getTaskid(), intent, PendingIntent.FLAG_UPDATE_CURRENT);
+
+        if (alarmManager != null) {
+            alarmManager.setExact(AlarmManager.RTC_WAKEUP, calendar.getTimeInMillis(), pendingIntent);
+        }
     }
 
     private void deletetask(TaskEntity task, int position) {
@@ -96,6 +125,22 @@ public class Taskadaptar extends RecyclerView.Adapter<Taskadaptar.TaskViewholder
     public void setTasks(List<TaskEntity> taskList) {
         this.tasklist = taskList;
         notifyDataSetChanged();
+    }
+    public void attachItemTouchHelperToRecyclerView(RecyclerView recyclerView) {
+        ItemTouchHelper itemTouchHelper = new ItemTouchHelper(new ItemTouchHelper.SimpleCallback(0, ItemTouchHelper.LEFT | ItemTouchHelper.RIGHT) {
+            @Override
+            public boolean onMove(@NonNull RecyclerView recyclerView, @NonNull RecyclerView.ViewHolder viewHolder, @NonNull RecyclerView.ViewHolder target) {
+                return false;
+            }
+
+            @Override
+            public void onSwiped(@NonNull RecyclerView.ViewHolder viewHolder, int direction) {
+                int position = viewHolder.getAdapterPosition();
+                TaskEntity task = tasklist.get(position);
+                deletetask(task, position);
+            }
+        });
+        itemTouchHelper.attachToRecyclerView(recyclerView);
     }
 
 }
